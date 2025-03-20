@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Views;
 
 namespace ChronoHub;
 
@@ -12,19 +13,19 @@ public partial class MainPage : ContentPage
 
 		ChronoList = new ObservableCollection<Chrono>();
 		BindingContext = this;
+
+		MessagingCenter.Subscribe<NewChronoPage, Chrono>(this, "AddChronoMessage", (sender, item) =>
+        {
+            ChronoList.Add(item);
+        });
 	}
 
 
 	// Method to add a new Chrono to the collection
-	private void OnAddChronoClicked(object sender, EventArgs e)
+	private async void OnAddChronoClicked(object sender, EventArgs e)
 	{
-		var newChrono = new Chrono($"Chrono {ChronoList.Count + 1}");
-		ChronoList.Add(newChrono);
-
-		// Comandos para cada cronómetro
-		newChrono.ButtonWidth = DeviceDisplay.MainDisplayInfo.Width * 0.046;
-		Console.WriteLine(DeviceDisplay.MainDisplayInfo.Width);
-		Console.WriteLine($"ButtonWidth: {newChrono.ButtonWidth}");
+		var popup = new NewChronoPage();
+        this.ShowPopup(popup);
 	}
 
 	// Method to remove a Chrono from the collection

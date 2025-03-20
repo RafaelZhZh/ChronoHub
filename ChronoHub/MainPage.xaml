@@ -3,7 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ChronoHub.MainPage">
 
-    <ScrollView>
+    <ScrollView Margin="10,30">
+        
+        <!-- Add Logo of APP -->
+
         <VerticalStackLayout
             Padding="30,0"
             Spacing="25">
@@ -15,7 +18,7 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <StackLayout Orientation="Horizontal" Margin="{Binding ButtonMargin}">
-                            <Grid ColumnDefinitions="50*, 30*" HorizontalOptions="FillAndExpand">
+                            <Grid ColumnDefinitions="70*, 50*" HorizontalOptions="FillAndExpand">
                                 <StackLayout Grid.Column="0" Orientation="Vertical">
                                     <Label Text="{Binding Name}" 
                                            VerticalOptions="Center"
@@ -28,7 +31,7 @@
                                 </StackLayout>
                                 <StackLayout Orientation="Horizontal"
                                         Grid.Column="1" 
-                                        HorizontalOptions="Fill">
+                                        HorizontalOptions="FillAndExpand">
                                     <Button WidthRequest="{Binding ButtonWidth}"
                                             Margin="5,2.5"
                                             Text="▶"

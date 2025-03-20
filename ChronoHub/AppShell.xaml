@@ -7,9 +7,9 @@
     Shell.FlyoutBehavior="Flyout"
     Title="ChronoHub">
 
-    <ShellContent
+    <!-- <ShellContent
         Title="ChronoHub"
         ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Route="MainPage" /> -->
 
 </Shell>
