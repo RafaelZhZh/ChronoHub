@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ChronoHub.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+
+            <Button Text="Add Chrono" Clicked="OnAddChronoClicked"/>
+
+            <CollectionView x:Name="ChronoCollectionView" 
+                            ItemsSource="{Binding ChronoList}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Orientation="Horizontal" Margin="{Binding ButtonMargin}">
+                            <Grid ColumnDefinitions="50*, 30*" HorizontalOptions="FillAndExpand">
+                                <StackLayout Grid.Column="0" Orientation="Vertical">
+                                    <Label Text="{Binding Name}" 
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="StartAndExpand" />
+                                    <Label Text="{Binding Time}"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="StartAndExpand"
+                                           FontSize="Large"
+                                           FontAttributes="Bold" />
+                                </StackLayout>
+                                <StackLayout Orientation="Horizontal"
+                                        Grid.Column="1" 
+                                        HorizontalOptions="Fill">
+                                    <Button WidthRequest="{Binding ButtonWidth}"
+                                            Margin="5,2.5"
+                                            Text="▶"
+                                            HorizontalOptions="End"
+                                            Command="{Binding StartCommand}"
+                                            IsVisible="{Binding CanStart}"/>
+                                    <Button WidthRequest="{Binding ButtonWidth}"
+                                            Text="⏸"
+                                            Margin="5,2.5"
+                                            HorizontalOptions="End"
+                                            Command="{Binding StopCommand}"
+                                            IsVisible="{Binding CanStop}"/>
+                                    <Button WidthRequest="{Binding ButtonWidth}"
+                                            Text="🗑"
+                                            Margin="5,2.5"
+                                            HorizontalOptions="End"
+                                            Clicked="OnRemoveChronoClicked"
+                                            CommandParameter="{Binding .}"/>
+                                </StackLayout>
+                            </Grid>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -1,0 +1,8 @@
+# .gitignore
+# Ignore bin and obj folders
+/ChronoHub/bin/
+/ChronoHub/obj/
+bin/
+obj/
+
+*.sln
