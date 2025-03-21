@@ -9,32 +9,41 @@ public class Chrono : INotifyPropertyChanged
     public string Time { get; set; }
     public bool CanStart { get; set; }
     public bool CanStop { get; set; }
+    public DateTime DateTimeLastStart { get; set; }
     public double ButtonWidth { get; set; }
     private System.Timers.Timer _timer;
-    private int _seconds;
+    public int _seconds;
 
-    // Comandos
     
     public ICommand StartCommand { get; set;}
     public ICommand StopCommand { get; set;}
+    public void changedData()
+    {
+        MessagingCenter.Send(this, "OnDataChanged", "Changed");
+    }
 
-    public Chrono(string _name)
+    public Chrono(string _name,int _time = 0, bool _canStart = true, bool _canStop = false, DateTime _dateTimeLastStart = new DateTime())
     {
         Name = _name;
-        Time = "00:00";
-        _seconds = 0;
+        DateTimeLastStart = _dateTimeLastStart;
+        _seconds = _time;
         _timer = new System.Timers.Timer(1000);  // Timer que se dispara cada segundo
         _timer.Elapsed += OnTimerElapsed;
-        CanStart = true;
-        CanStop = false;
+        if(_canStop){
+            _seconds = _seconds+(int)(DateTime.Now - DateTimeLastStart).TotalSeconds;
+            _timer.Start();
+        }
+        CanStart = _canStart;
+        CanStop = _canStop;
+
         StartCommand = new Command(() => StartChrono());
         StopCommand = new Command(() => StopChrono());
+        Time = TimeSpan.FromSeconds(_seconds).ToString(@"mm\:ss");
     }
 
     private void OnTimerElapsed(object sender, ElapsedEventArgs e)
     {
-        _seconds++;
-        Time = TimeSpan.FromSeconds(_seconds).ToString(@"mm\:ss");
+        Time = TimeSpan.FromSeconds(_seconds+(int)(DateTime.Now - DateTimeLastStart).TotalSeconds).ToString(@"mm\:ss");
         OnPropertyChanged(nameof(Time));
     }
 
@@ -43,10 +52,12 @@ public class Chrono : INotifyPropertyChanged
         if (CanStart)
         {
             _timer.Start();
+            DateTimeLastStart = DateTime.Now;
             CanStart = false;
             CanStop = true;
             OnPropertyChanged(nameof(CanStart));
             OnPropertyChanged(nameof(CanStop));
+            changedData();
         }
     }
 
@@ -55,10 +66,12 @@ public class Chrono : INotifyPropertyChanged
         if (CanStop)
         {
             _timer.Stop();
+            _seconds = _seconds+(int)(DateTime.Now - DateTimeLastStart).TotalSeconds;
             CanStart = true;
             CanStop = false;
             OnPropertyChanged(nameof(CanStart));
             OnPropertyChanged(nameof(CanStop));
+            changedData();
         }
     }
 

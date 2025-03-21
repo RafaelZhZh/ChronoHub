@@ -12,9 +12,7 @@ public partial class NewChronoPage : Popup
     {
         if (!string.IsNullOrEmpty(chrono_name_form.Text))
         {
-            var newChrono = new Chrono(chrono_name_form.Text);
-            newChrono.ButtonWidth = DeviceDisplay.MainDisplayInfo.Width * 0.046;
-            MessagingCenter.Send(this, "AddChronoMessage", newChrono);
+            MessagingCenter.Send(this, "AddChronoMessage", chrono_name_form.Text);
 
             await CloseAsync();
         }

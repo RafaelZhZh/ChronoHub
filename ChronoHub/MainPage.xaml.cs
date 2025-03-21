@@ -6,6 +6,7 @@ namespace ChronoHub;
 public partial class MainPage : ContentPage
 {
 	public ObservableCollection<Chrono> ChronoList { get; set; }
+	public DatabaseService dbService = new DatabaseService();
 
 	public MainPage()
 	{
@@ -14,10 +15,28 @@ public partial class MainPage : ContentPage
 		ChronoList = new ObservableCollection<Chrono>();
 		BindingContext = this;
 
-		MessagingCenter.Subscribe<NewChronoPage, Chrono>(this, "AddChronoMessage", (sender, item) =>
+		// Load the ChronoList from the database
+		var list_chrono_sql = dbService.GetData();
+		foreach (var item in list_chrono_sql)
+		{
+			item.ButtonWidth = DeviceDisplay.MainDisplayInfo.Width * 0.046;
+			ChronoList.Add(item);
+		}
+
+		MessagingCenter.Subscribe<NewChronoPage, string>(this, "AddChronoMessage", (sender, item) =>
         {
-            ChronoList.Add(item);
+			var new_chrono = new Chrono(item);
+			new_chrono.ButtonWidth = DeviceDisplay.MainDisplayInfo.Width * 0.046;
+            ChronoList.Add(new_chrono);
+			dbService.SaveData(ChronoList);
         });
+
+		MessagingCenter.Subscribe<Chrono, string>(this, "OnDataChanged", (sender, item) =>
+        {
+			dbService.SaveData(ChronoList);
+        });
+
+
 	}
 
 
@@ -36,7 +55,13 @@ public partial class MainPage : ContentPage
         if (ChronoList.Contains(item))
         {
             ChronoList.Remove(item);
+			dbService.SaveData(ChronoList);
         }
     }
+
+	public void SaveOnSleep()
+	{
+		dbService.SaveData(ChronoList);
+	}
 }
 
