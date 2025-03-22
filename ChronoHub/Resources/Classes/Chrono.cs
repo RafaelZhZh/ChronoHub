@@ -13,6 +13,7 @@ public class Chrono : INotifyPropertyChanged
     public double ButtonWidth { get; set; }
     private System.Timers.Timer _timer;
     public int _seconds;
+    public bool IsSelected { get; set; }
 
     
     public ICommand StartCommand { get; set;}
@@ -35,15 +36,19 @@ public class Chrono : INotifyPropertyChanged
         }
         CanStart = _canStart;
         CanStop = _canStop;
+        IsSelected = false;
 
         StartCommand = new Command(() => StartChrono());
         StopCommand = new Command(() => StopChrono());
-        Time = TimeSpan.FromSeconds(_seconds).ToString(@"mm\:ss");
+
+        TimeSpan auxtime = TimeSpan.FromSeconds(_seconds);
+        Time = string.Format("{0:D2}:{1:D2}:{2:D2}", (int)auxtime.TotalHours, auxtime.Minutes, auxtime.Seconds);
     }
 
     private void OnTimerElapsed(object sender, ElapsedEventArgs e)
     {
-        Time = TimeSpan.FromSeconds(_seconds+(int)(DateTime.Now - DateTimeLastStart).TotalSeconds).ToString(@"mm\:ss");
+        TimeSpan auxtime = TimeSpan.FromSeconds(_seconds+(int)(DateTime.Now - DateTimeLastStart).TotalSeconds);
+        Time = string.Format("{0:D2}:{1:D2}:{2:D2}", (int)auxtime.TotalHours, auxtime.Minutes, auxtime.Seconds);
         OnPropertyChanged(nameof(Time));
     }
 

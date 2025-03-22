@@ -7,6 +7,7 @@ public partial class MainPage : ContentPage
 {
 	public ObservableCollection<Chrono> ChronoList { get; set; }
 	public DatabaseService dbService = new DatabaseService();
+	public bool SomethingSelected { get; set; }
 
 	public MainPage()
 	{
@@ -35,8 +36,6 @@ public partial class MainPage : ContentPage
         {
 			dbService.SaveData(ChronoList);
         });
-
-
 	}
 
 
@@ -62,6 +61,44 @@ public partial class MainPage : ContentPage
 	public void SaveOnSleep()
 	{
 		dbService.SaveData(ChronoList);
+	}
+
+	public void OnStartSelectedClicked(object sender, EventArgs e)
+	{
+		foreach (var item in ChronoList)
+		{
+			if (item.IsSelected)
+			{
+				item.StartChrono();
+			}
+		}
+	}
+
+	public void OnStopSelectedClicked(object sender, EventArgs e)
+	{
+		foreach (var item in ChronoList)
+		{
+			if (item.IsSelected)
+			{
+				item.StopChrono();
+			}
+		}
+	}
+
+	public void OnRemoveSelectedClicked(object sender, EventArgs e)
+	{
+		var itemsToRemove = ChronoList.Where(x => x.IsSelected).ToList();
+		foreach (var item in itemsToRemove)
+		{
+			ChronoList.Remove(item);
+		}
+		dbService.SaveData(ChronoList);
+	}
+
+	public void OnCheckboxChanged(object sender, EventArgs e)
+	{
+		SomethingSelected = ChronoList.Any(x => x.IsSelected);
+		OnPropertyChanged(nameof(SomethingSelected));
 	}
 }
 
