@@ -1,6 +1,6 @@
 using System.ComponentModel;
-using System.Timers;
 using System.Windows.Input;
+using Java.Sql;
 
 namespace ChronoHub;
 public class Chrono : INotifyPropertyChanged
@@ -11,8 +11,7 @@ public class Chrono : INotifyPropertyChanged
     public bool CanStop { get; set; }
     public DateTime DateTimeLastStart { get; set; }
     public double ButtonWidth { get; set; }
-    private System.Timers.Timer _timer;
-    public int _seconds;
+    public int _milliseconds;
     public bool IsSelected { get; set; }
     public string FilterColor { get; set; }
     public int MaxHeight { get; set; }
@@ -29,38 +28,41 @@ public class Chrono : INotifyPropertyChanged
     {
         Name = _name;
         DateTimeLastStart = _dateTimeLastStart;
-        _seconds = _time;
-        _timer = new System.Timers.Timer(1000);  // Timer que se dispara cada segundo
-        _timer.Elapsed += OnTimerElapsed;
-        if(_canStop){
-            _timer.Start();
-        }
+        _milliseconds = _time;
         CanStart = _canStart;
         CanStop = _canStop;
         IsSelected = false;
         FilterColor = _FilterColor;
         MaxHeight = 9000;
 
-        StartCommand = new Command(() => StartChrono());
-        StopCommand = new Command(() => StopChrono());
+        StartCommand = new Command(() => StartChrono(DateTime.Now));
+        StopCommand = new Command(() => StopChrono(DateTime.Now));
 
-        TimeSpan auxtime = TimeSpan.FromSeconds(_seconds);
-        Time = string.Format("{0:D2}:{1:D2}:{2:D2}", (int)auxtime.TotalHours, auxtime.Minutes, auxtime.Seconds);
+        UpdateTime(_milliseconds);
     }
 
-    private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+    public void UpdateTimeRunning(DateTime _dateUpdate)
     {
-        TimeSpan auxtime = TimeSpan.FromSeconds(_seconds+(int)(DateTime.Now - DateTimeLastStart).TotalSeconds);
-        Time = string.Format("{0:D2}:{1:D2}:{2:D2}", (int)auxtime.TotalHours, auxtime.Minutes, auxtime.Seconds);
+        if (CanStop){
+            UpdateTime(_milliseconds+(int)(_dateUpdate - DateTimeLastStart).TotalMilliseconds);  
+        }
+        else{
+            UpdateTime(_milliseconds);
+        }
+    }
+
+    private void UpdateTime(int _auxmilliseconds)
+    {
+        TimeSpan auxtime = TimeSpan.FromMilliseconds(_auxmilliseconds);
+        Time = string.Format("{0:D2}:{1:D2}:{2:D2}.{3:D3}", (int)auxtime.TotalHours, auxtime.Minutes, auxtime.Seconds, auxtime.Milliseconds);
         OnPropertyChanged(nameof(Time));
     }
 
-    public void StartChrono()
+    public void StartChrono(DateTime _dateStart)
     {
         if (CanStart)
         {
-            _timer.Start();
-            DateTimeLastStart = DateTime.Now;
+            DateTimeLastStart = _dateStart;
             CanStart = false;
             CanStop = true;
             OnPropertyChanged(nameof(CanStart));
@@ -69,12 +71,11 @@ public class Chrono : INotifyPropertyChanged
         }
     }
 
-    public void StopChrono()
+    public void StopChrono(DateTime _dateStop)
     {
         if (CanStop)
         {
-            _timer.Stop();
-            _seconds = _seconds+(int)(DateTime.Now - DateTimeLastStart).TotalSeconds;
+            _milliseconds = _milliseconds+(int)(_dateStop - DateTimeLastStart).TotalMilliseconds;
             CanStart = true;
             CanStop = false;
             OnPropertyChanged(nameof(CanStart));

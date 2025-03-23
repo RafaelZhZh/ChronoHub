@@ -32,7 +32,7 @@ public class DatabaseService
             var chronoData = new ChronoDataSQL
             {
                 Name = item.Name,
-                Time = item._seconds,
+                Time = item._milliseconds,
                 IsActive = item.CanStop,
                 DateTimeLastStart = item.DateTimeLastStart,
                 FilterColor = item.FilterColor

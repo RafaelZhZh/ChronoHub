@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Views;
+using System.Timers;
 
 namespace ChronoHub;
 
@@ -15,6 +16,10 @@ public partial class MainPage : ContentPage
 	};
 	public bool SomethingSelected { get; set; }
 
+	private System.Timers.Timer _timer;
+
+	private int number_chrono_running = 0;
+
 	public MainPage()
 	{
 		InitializeComponent();
@@ -23,12 +28,20 @@ public partial class MainPage : ContentPage
 		BindingContext = this;
 
 		// Load the ChronoList from the database
+		var SomethingRunning = false;
 		var list_chrono_sql = dbService.GetData();
 		foreach (var item in list_chrono_sql)
 		{
 			item.ButtonWidth = DeviceDisplay.MainDisplayInfo.Width * 0.046;
 			ChronoList.Add(item);
+			if(item.CanStop){
+				number_chrono_running++;
+				SomethingRunning = true;
+			}
 		}
+		_timer = new System.Timers.Timer(1);  // Timer que se dispara cada segundo
+		_timer.Elapsed += OnTimerElapsed;
+		_timer.Start();
 
 		MessagingCenter.Subscribe<NewChronoPage, List<string>>(this, "AddChronoMessage", (sender, item) =>
         {
@@ -105,22 +118,24 @@ public partial class MainPage : ContentPage
 
 	public void OnStartSelectedClicked(object sender, EventArgs e)
 	{
+		DateTime dateStart = DateTime.Now;
 		foreach (var item in ChronoList)
 		{
 			if (item.IsSelected)
 			{
-				item.StartChrono();
+				item.StartChrono(dateStart);
 			}
 		}
 	}
 
 	public void OnStopSelectedClicked(object sender, EventArgs e)
 	{
+		DateTime dateStop = DateTime.Now;
 		foreach (var item in ChronoList)
 		{
 			if (item.IsSelected)
 			{
-				item.StopChrono();
+				item.StopChrono(dateStop);
 			}
 		}
 	}
@@ -153,6 +168,15 @@ public partial class MainPage : ContentPage
 	{
 		var popup = new FilterPage(actualFilter);
 		this.ShowPopup(popup);
+	}
+
+	private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+	{
+		DateTime dateUpdate = DateTime.Now;
+		Console.WriteLine("Timer elapsed at: " + dateUpdate);
+		foreach (var item in ChronoList){
+			item.UpdateTimeRunning(dateUpdate);
+		}
 	}
 }
 
