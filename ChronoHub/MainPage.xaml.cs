@@ -89,6 +89,15 @@ public partial class MainPage : ContentPage
 				chrono.ChangeFiltered(actualFilter);
 			}
 		}); 
+
+		MessagingCenter.Subscribe<DeletePage, List<Chrono>>(this, "DeleteMessage", (sender, item) =>
+        {
+			foreach (var chrono in item)
+			{
+				ChronoList.Remove(chrono);
+			}
+			dbService.SaveData(ChronoList);
+        });
 	}
 
 
@@ -102,13 +111,12 @@ public partial class MainPage : ContentPage
 	// Method to remove a Chrono from the collection
     public void OnRemoveChronoClicked(object sender, EventArgs e)
     {
+		
         var button = (Button)sender;
         var item = (Chrono)button.CommandParameter;
-        if (ChronoList.Contains(item))
-        {
-            ChronoList.Remove(item);
-			dbService.SaveData(ChronoList);
-        }
+
+		var popup = new DeletePage(new List<Chrono>{item});
+        this.ShowPopup(popup);
     }
 
 	public void SaveOnSleep()
@@ -143,11 +151,9 @@ public partial class MainPage : ContentPage
 	public void OnRemoveSelectedClicked(object sender, EventArgs e)
 	{
 		var itemsToRemove = ChronoList.Where(x => x.IsSelected).ToList();
-		foreach (var item in itemsToRemove)
-		{
-			ChronoList.Remove(item);
-		}
-		dbService.SaveData(ChronoList);
+
+		var popup = new DeletePage(itemsToRemove);
+        this.ShowPopup(popup);
 	}
 
 	public void OnCheckboxChanged(object sender, EventArgs e)
