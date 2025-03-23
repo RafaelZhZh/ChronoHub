@@ -9,6 +9,7 @@ public class ChronoDataSQL
     public int Time { get; set; }
     public bool IsActive { get; set; }
     public DateTime DateTimeLastStart { get; set; }
+    public string FilterColor { get; set; }
 }
 
 
@@ -33,7 +34,8 @@ public class DatabaseService
                 Name = item.Name,
                 Time = item._seconds,
                 IsActive = item.CanStop,
-                DateTimeLastStart = item.DateTimeLastStart
+                DateTimeLastStart = item.DateTimeLastStart,
+                FilterColor = item.FilterColor
             };
             _connection.InsertOrReplace(chronoData);
         }
@@ -45,7 +47,14 @@ public class DatabaseService
         var chronoListSQL = new List<Chrono>();
         foreach (var item in chronoData)
         {
-            var chrono = new Chrono(item.Name, item.Time, !item.IsActive, item.IsActive, item.DateTimeLastStart);
+            var chrono = new Chrono(
+                item.Name, 
+                item.Time, 
+                !item.IsActive, 
+                item.IsActive, 
+                item.DateTimeLastStart,
+                item.FilterColor
+            );
             chronoListSQL.Add(chrono);
         }
 

@@ -14,29 +14,47 @@
                     HorizontalOptions="Center"
                     VerticalOptions="Center"
                     FontAttributes="Bold" />
-
-                <Button Text="Add Chrono" Clicked="OnAddChronoClicked"/>
+                <Grid ColumnDefinitions="*, Auto" HorizontalOptions="FillAndExpand">
+                    <Button Grid.Column="0" 
+                        Text="Add Chrono" 
+                        Clicked="OnAddChronoClicked" 
+                        HorizontalOptions="Fill"
+                        Margin="5,5"/>
+                    <Button Grid.Column="1" 
+                        Text="Filter" 
+                        Clicked="OnFilterClicked"
+                        Margin="5,5"/>
+                </Grid>
+                
             </StackLayout>
         </Grid>
 
         <!--Content-->
-        <ScrollView Margin="10,20" Grid.Row="1">
+        <ScrollView Margin="10,10,10,0" Grid.Row="1">
                 <VerticalStackLayout
-                    Padding="30,0"
+                    Padding="20,0"
                     Spacing="25">
                     <CollectionView x:Name="ChronoCollectionView" 
                                     ItemsSource="{Binding ChronoList}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <StackLayout Orientation="Horizontal" Margin="{Binding ButtonMargin}">
+                                <StackLayout Orientation="Horizontal" MaximumHeightRequest="{Binding MaxHeight}">
                                     <Grid ColumnDefinitions="20*,70*, 50*" HorizontalOptions="FillAndExpand">
                                         <StackLayout Grid.Column="0" Orientation="Vertical">
                                             <CheckBox IsChecked="{Binding IsSelected}" CheckedChanged="OnCheckboxChanged" />
                                         </StackLayout>
                                         <StackLayout Grid.Column="1" Orientation="Vertical">
-                                            <Label Text="{Binding Name}" 
+                                            <StackLayout Orientation="Horizontal">
+                                                <Label Text="{Binding Name}" 
                                                 VerticalOptions="Center"
-                                                HorizontalOptions="StartAndExpand" />
+                                                HorizontalOptions="Start" />
+                                                <Button Text="✏️"
+                                                    Padding="0"
+                                                    BackgroundColor="Transparent"
+                                                    Clicked="OnEditChronoClicked"
+                                                    CommandParameter="{Binding .}"
+                                                    Margin="10,0"/>
+                                            </StackLayout>
                                             <Label Text="{Binding Time}"
                                                 VerticalOptions="Center"
                                                 HorizontalOptions="StartAndExpand"
@@ -74,11 +92,11 @@
             </ScrollView>
 
         <!--Footer-->
-        <Grid Margin="10,20" Grid.Row="2">
+        <Grid Margin="10,10,10,15" Grid.Row="2">
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" IsVisible="{Binding SomethingSelected}">
-                    <Button Text="▶ Selected" Clicked="OnStartSelectedClicked"/>
-                    <Button Text="⏸ Selected" Clicked="OnStopSelectedClicked"/>
-                    <Button Text="🗑 Selected" Clicked="OnRemoveSelectedClicked"/>
+                    <Button Text="▶ Selected" Clicked="OnStartSelectedClicked" Margin="5,5"/>
+                    <Button Text="⏸ Selected" Clicked="OnStopSelectedClicked" Margin="5,5"/>
+                    <Button Text="🗑 Selected" Clicked="OnRemoveSelectedClicked" Margin="5,5"/>
             </StackLayout>
         </Grid>
     </Grid>

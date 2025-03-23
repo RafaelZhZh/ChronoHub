@@ -7,6 +7,12 @@ public partial class MainPage : ContentPage
 {
 	public ObservableCollection<Chrono> ChronoList { get; set; }
 	public DatabaseService dbService = new DatabaseService();
+	public Dictionary<string, bool> actualFilter = new Dictionary<string, bool>{
+		{"None", true},
+		{"Red", true},
+		{"Green", true},
+		{"Blue", true}
+	};
 	public bool SomethingSelected { get; set; }
 
 	public MainPage()
@@ -24,25 +30,59 @@ public partial class MainPage : ContentPage
 			ChronoList.Add(item);
 		}
 
-		MessagingCenter.Subscribe<NewChronoPage, string>(this, "AddChronoMessage", (sender, item) =>
+		MessagingCenter.Subscribe<NewChronoPage, List<string>>(this, "AddChronoMessage", (sender, item) =>
         {
-			var new_chrono = new Chrono(item);
-			new_chrono.ButtonWidth = DeviceDisplay.MainDisplayInfo.Width * 0.046;
-            ChronoList.Add(new_chrono);
-			dbService.SaveData(ChronoList);
+			if (ChronoList.Any(x => x.Name == item[0]))
+			{
+				Application.Current.MainPage.DisplayAlert("Error", "There is already a chronometer with that name", "OK");
+			}
+			else{
+				var new_chrono = new Chrono(item[0]);
+				new_chrono.ChangeFilter(item[1]);
+				new_chrono.ButtonWidth = DeviceDisplay.MainDisplayInfo.Width * 0.046;
+				ChronoList.Add(new_chrono);
+				dbService.SaveData(ChronoList);
+			}
+        });
+
+		MessagingCenter.Subscribe<EditChronoPage, List<string>>(this, "ChangeMessage", (sender, item) =>
+        {
+			if (ChronoList.Any(x => x.Name == item[0]))
+			{
+				Application.Current.MainPage.DisplayAlert("Error", "There is already a chronometer with that name", "OK");
+			}
+			else{
+				Chrono? existingChrono = ChronoList.FirstOrDefault(x => x.Name == item[1]);
+				if (existingChrono != null)
+				{
+					existingChrono.ChangeName(item[0]);
+					existingChrono.ChangeFilter(item[2]);
+					existingChrono.ChangeFiltered(actualFilter);
+				}
+			}
         });
 
 		MessagingCenter.Subscribe<Chrono, string>(this, "OnDataChanged", (sender, item) =>
         {
 			dbService.SaveData(ChronoList);
         });
+
+		MessagingCenter.Subscribe<FilterPage, Dictionary<string,bool>>(this, "FilterMessage", (sender, item) =>
+        {
+			actualFilter = item;
+			foreach(Chrono chrono in ChronoList)
+			{
+				chrono.ChangeSelected(false);
+				chrono.ChangeFiltered(actualFilter);
+			}
+		}); 
 	}
 
 
 	// Method to add a new Chrono to the collection
 	private async void OnAddChronoClicked(object sender, EventArgs e)
 	{
-		var popup = new NewChronoPage();
+		var popup = new NewChronoPage(actualFilter);
         this.ShowPopup(popup);
 	}
 
@@ -99,6 +139,20 @@ public partial class MainPage : ContentPage
 	{
 		SomethingSelected = ChronoList.Any(x => x.IsSelected);
 		OnPropertyChanged(nameof(SomethingSelected));
+	}
+
+	public void OnEditChronoClicked(object sender, EventArgs e)
+	{
+		var button = (Button)sender;
+		var item = (Chrono)button.CommandParameter;
+		var popup = new EditChronoPage(item,actualFilter);
+		this.ShowPopup(popup);
+	}
+
+	public void OnFilterClicked(object sender, EventArgs e)
+	{
+		var popup = new FilterPage(actualFilter);
+		this.ShowPopup(popup);
 	}
 }
 

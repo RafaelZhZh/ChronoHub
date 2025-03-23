@@ -1,11 +1,12 @@
 using CommunityToolkit.Maui.Views;
 
 namespace ChronoHub;
-public partial class NewChronoPage : Popup
+public partial class EditChronoPage : Popup
 {
+    public string old_name { get; set; }
     public string selectedValue { get; set; }
     public List<string> filter_options { get; set; }
-    public NewChronoPage(Dictionary<string,bool> actual_filter)
+    public EditChronoPage(Chrono chrono, Dictionary<string,bool> actual_filter)
     {
         InitializeComponent();
         filter_options = new List<string>();
@@ -13,24 +14,23 @@ public partial class NewChronoPage : Popup
         {
             filter_options.Add(item.Key);
         }
-        GenerateRadioButtons();
+        GenerateRadioButtons(chrono);
+
+        old_name = chrono.Name;
     }
 
-    private async void OnAddButtonClicked(object sender, EventArgs e)
+    private async void OnChangeButtonClicked(object sender, EventArgs e)
     {
         if (!string.IsNullOrEmpty(chrono_name_form.Text))
         {
-
-            MessagingCenter.Send(this, "AddChronoMessage", new List<string>{
-                chrono_name_form.Text,
-                selectedValue
-            });
+            List<string> chrono_names = [chrono_name_form.Text, old_name, selectedValue];
+            MessagingCenter.Send(this, "ChangeMessage", chrono_names);
 
             await CloseAsync();
         }
         else
         {
-            await Application.Current.MainPage.DisplayAlert("Error", "You must enter a name to the new chronometer.", "OK");
+            await Application.Current.MainPage.DisplayAlert("Error", "You must enter the new name to the chronometer.", "OK");
         }
     }
     private async void OnCancelButtonClicked(object sender, EventArgs e)
@@ -38,7 +38,7 @@ public partial class NewChronoPage : Popup
         await CloseAsync();
     }
 
-    private void GenerateRadioButtons()
+    private void GenerateRadioButtons(Chrono chrono)
     {
         RadioButtonStackLayout.Children.Clear();
 
@@ -49,7 +49,7 @@ public partial class NewChronoPage : Popup
                 Content = option,
                 GroupName = "Group1"
             };
-            if (option == "None")
+            if (option == chrono.FilterColor)
             {
                 radioButton.IsChecked = true;
             }

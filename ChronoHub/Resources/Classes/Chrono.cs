@@ -14,6 +14,8 @@ public class Chrono : INotifyPropertyChanged
     private System.Timers.Timer _timer;
     public int _seconds;
     public bool IsSelected { get; set; }
+    public string FilterColor { get; set; }
+    public int MaxHeight { get; set; }
 
     
     public ICommand StartCommand { get; set;}
@@ -23,7 +25,7 @@ public class Chrono : INotifyPropertyChanged
         MessagingCenter.Send(this, "OnDataChanged", "Changed");
     }
 
-    public Chrono(string _name,int _time = 0, bool _canStart = true, bool _canStop = false, DateTime _dateTimeLastStart = new DateTime())
+    public Chrono(string _name,int _time = 0, bool _canStart = true, bool _canStop = false, DateTime _dateTimeLastStart = new DateTime(), string _FilterColor = "None")
     {
         Name = _name;
         DateTimeLastStart = _dateTimeLastStart;
@@ -31,12 +33,13 @@ public class Chrono : INotifyPropertyChanged
         _timer = new System.Timers.Timer(1000);  // Timer que se dispara cada segundo
         _timer.Elapsed += OnTimerElapsed;
         if(_canStop){
-            _seconds = _seconds+(int)(DateTime.Now - DateTimeLastStart).TotalSeconds;
             _timer.Start();
         }
         CanStart = _canStart;
         CanStop = _canStop;
         IsSelected = false;
+        FilterColor = _FilterColor;
+        MaxHeight = 9000;
 
         StartCommand = new Command(() => StartChrono());
         StopCommand = new Command(() => StopChrono());
@@ -77,6 +80,29 @@ public class Chrono : INotifyPropertyChanged
             OnPropertyChanged(nameof(CanStart));
             OnPropertyChanged(nameof(CanStop));
             changedData();
+        }
+    }
+    public void ChangeSelected(bool selected){
+        IsSelected = selected;
+        OnPropertyChanged(nameof(IsSelected));
+    }
+
+    public void ChangeName(string new_name){
+        Name = new_name;
+        OnPropertyChanged(nameof(Name));
+        changedData();
+    }
+
+    public void ChangeFilter(string new_filter){
+        FilterColor = new_filter;
+        changedData();
+    }
+
+    public void ChangeFiltered(Dictionary<string,bool> actualFilter){
+        if (actualFilter.ContainsKey(FilterColor))
+        {
+            MaxHeight = actualFilter[FilterColor] ? 9000 : 0;
+            OnPropertyChanged(nameof(MaxHeight));
         }
     }
 
