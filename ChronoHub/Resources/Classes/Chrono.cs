@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Windows.Input;
-using Java.Sql;
 
 namespace ChronoHub;
 public class Chrono : INotifyPropertyChanged
@@ -11,9 +10,9 @@ public class Chrono : INotifyPropertyChanged
     public bool CanStop { get; set; }
     public DateTime DateTimeLastStart { get; set; }
     public double ButtonWidth { get; set; }
-    public int _milliseconds;
+    public int _milliseconds { get; set; } = 0;
     public bool IsSelected { get; set; }
-    public string FilterColor { get; set; }
+    public string FilterColor { get; set; } = "None";
     public int MaxHeight { get; set; }
 
     

@@ -16,6 +16,7 @@ public partial class EditChronoPage : Popup
         }
         GenerateRadioButtons(chrono);
 
+        chrono_name_form.Text = chrono.Name;
         old_name = chrono.Name;
     }
 
@@ -51,6 +52,7 @@ public partial class EditChronoPage : Popup
             };
             if (option == chrono.FilterColor)
             {
+                selectedValue = "None";
                 radioButton.IsChecked = true;
             }
             radioButton.CheckedChanged += OnCheckedChanged;

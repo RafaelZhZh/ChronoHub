@@ -25,7 +25,7 @@ public partial class NewChronoPage : Popup
                 chrono_name_form.Text,
                 selectedValue
             });
-
+            
             await CloseAsync();
         }
         else
@@ -52,6 +52,7 @@ public partial class NewChronoPage : Popup
             if (option == "None")
             {
                 radioButton.IsChecked = true;
+                selectedValue = "None";
             }
             radioButton.CheckedChanged += OnCheckedChanged;
             RadioButtonStackLayout.Children.Add(radioButton);
