@@ -3,57 +3,101 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ChronoHub.MainPage">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
+    <Grid RowDefinitions="Auto,*,Auto">
 
-            <Button Text="Add Chrono" Clicked="OnAddChronoClicked"/>
+        <!--Header-->
+        <Grid Margin="10,20" Grid.Row="0">
+            <StackLayout Orientation="Vertical">
+                <!-- Add Logo of APP -->
+                <Label Text="ChronoHub"
+                    FontSize="36"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    FontAttributes="Bold" />
+                <Grid ColumnDefinitions="*, Auto" HorizontalOptions="FillAndExpand">
+                    <Button Grid.Column="0" 
+                        Text="Add Chrono" 
+                        Clicked="OnAddChronoClicked" 
+                        HorizontalOptions="Fill"
+                        Margin="5,5"/>
+                    <Button Grid.Column="1" 
+                        Text="Filter" 
+                        Clicked="OnFilterClicked"
+                        Margin="5,5"/>
+                </Grid>
+                
+            </StackLayout>
+        </Grid>
 
-            <CollectionView x:Name="ChronoCollectionView" 
-                            ItemsSource="{Binding ChronoList}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout Orientation="Horizontal" Margin="{Binding ButtonMargin}">
-                            <Grid ColumnDefinitions="50*, 30*" HorizontalOptions="FillAndExpand">
-                                <StackLayout Grid.Column="0" Orientation="Vertical">
-                                    <Label Text="{Binding Name}" 
-                                           VerticalOptions="Center"
-                                           HorizontalOptions="StartAndExpand" />
-                                    <Label Text="{Binding Time}"
-                                           VerticalOptions="Center"
-                                           HorizontalOptions="StartAndExpand"
-                                           FontSize="Large"
-                                           FontAttributes="Bold" />
+        <!--Content-->
+        <ScrollView Margin="10,10,10,0" Grid.Row="1">
+                <VerticalStackLayout
+                    Padding="20,0"
+                    Spacing="25">
+                    <CollectionView x:Name="ChronoCollectionView" 
+                                    ItemsSource="{Binding ChronoList}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <StackLayout Orientation="Horizontal" MaximumHeightRequest="{Binding MaxHeight}">
+                                    <Grid ColumnDefinitions="20*,70*, 50*" HorizontalOptions="FillAndExpand">
+                                        <StackLayout Grid.Column="0" Orientation="Vertical">
+                                            <CheckBox IsChecked="{Binding IsSelected}" CheckedChanged="OnCheckboxChanged" />
+                                        </StackLayout>
+                                        <StackLayout Grid.Column="1" Orientation="Vertical">
+                                            <StackLayout Orientation="Horizontal">
+                                                <Label Text="{Binding Name}" 
+                                                VerticalOptions="Center"
+                                                HorizontalOptions="Start" />
+                                                <Button Text="✏️"
+                                                    Padding="0"
+                                                    BackgroundColor="Transparent"
+                                                    Clicked="OnEditChronoClicked"
+                                                    CommandParameter="{Binding .}"
+                                                    Margin="10,0"/>
+                                            </StackLayout>
+                                            <Label Text="{Binding Time}"
+                                                VerticalOptions="Center"
+                                                HorizontalOptions="StartAndExpand"
+                                                FontSize="Large"
+                                                FontAttributes="Bold" />
+                                        </StackLayout>
+                                        <StackLayout Orientation="Horizontal"
+                                                Grid.Column="2" 
+                                                HorizontalOptions="FillAndExpand">
+                                            <Button WidthRequest="{Binding ButtonWidth}"
+                                                    Margin="5,2.5"
+                                                    Text="▶"
+                                                    HorizontalOptions="End"
+                                                    Command="{Binding StartCommand}"
+                                                    IsVisible="{Binding CanStart}"/>
+                                            <Button WidthRequest="{Binding ButtonWidth}"
+                                                    Text="⏸"
+                                                    Margin="5,2.5"
+                                                    HorizontalOptions="End"
+                                                    Command="{Binding StopCommand}"
+                                                    IsVisible="{Binding CanStop}"/>
+                                            <Button WidthRequest="{Binding ButtonWidth}"
+                                                    Text="🗑"
+                                                    Margin="5,2.5"
+                                                    HorizontalOptions="End"
+                                                    Clicked="OnRemoveChronoClicked"
+                                                    CommandParameter="{Binding .}"/>
+                                        </StackLayout>
+                                    </Grid>
                                 </StackLayout>
-                                <StackLayout Orientation="Horizontal"
-                                        Grid.Column="1" 
-                                        HorizontalOptions="Fill">
-                                    <Button WidthRequest="{Binding ButtonWidth}"
-                                            Margin="5,2.5"
-                                            Text="▶"
-                                            HorizontalOptions="End"
-                                            Command="{Binding StartCommand}"
-                                            IsVisible="{Binding CanStart}"/>
-                                    <Button WidthRequest="{Binding ButtonWidth}"
-                                            Text="⏸"
-                                            Margin="5,2.5"
-                                            HorizontalOptions="End"
-                                            Command="{Binding StopCommand}"
-                                            IsVisible="{Binding CanStop}"/>
-                                    <Button WidthRequest="{Binding ButtonWidth}"
-                                            Text="🗑"
-                                            Margin="5,2.5"
-                                            HorizontalOptions="End"
-                                            Clicked="OnRemoveChronoClicked"
-                                            CommandParameter="{Binding .}"/>
-                                </StackLayout>
-                            </Grid>
-                        </StackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
-    </ScrollView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </ScrollView>
 
+        <!--Footer-->
+        <Grid Margin="10,10,10,15" Grid.Row="2">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" IsVisible="{Binding SomethingSelected}">
+                    <Button Text="▶ Selected" Clicked="OnStartSelectedClicked" Margin="5,5"/>
+                    <Button Text="⏸ Selected" Clicked="OnStopSelectedClicked" Margin="5,5"/>
+                    <Button Text="🗑 Selected" Clicked="OnRemoveSelectedClicked" Margin="5,5"/>
+            </StackLayout>
+        </Grid>
+    </Grid>
 </ContentPage>

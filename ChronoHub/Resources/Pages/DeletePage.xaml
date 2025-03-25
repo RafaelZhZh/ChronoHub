@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               x:Class="ChronoHub.DeletePage">
+    <StackLayout Padding="20" Spacing="10" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}">
+        <Label Text="Are you sure you want to delete this chronometer/s?" />
+        <ScrollView>
+            <VerticalStackLayout x:Name="NamesStackLayout">
+            </VerticalStackLayout>
+        </ScrollView>
+        <Button Text="Yes" Clicked="OnYesButtonClicked" />
+        <Button Text="No" Clicked="OnNoButtonClicked" />
+    </StackLayout>
+</toolkit:Popup>
