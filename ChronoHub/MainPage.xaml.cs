@@ -52,7 +52,7 @@ public partial class MainPage : ContentPage
 
 		MessagingCenter.Subscribe<EditChronoPage, List<string>>(this, "ChangeMessage", (sender, item) =>
         {
-			if (ChronoList.Any(x => x.Name == item[0]))
+			if (ChronoList.Any(x => x.Name == item[0]) && item[0] != item[1])
 			{
 				Application.Current.MainPage.DisplayAlert("Error", "There is already a chronometer with that name", "OK");
 			}
